@@ -1,16 +1,14 @@
 <?php
-// Включим вывод ошибок для отладки (убрать в продакшене)
+// тут вывод ошибок, в продакшене лучше убрать
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 try {
-    // Проверяем существование файла с постами
     $postsFile = 'data/posts.json';
     if (!file_exists($postsFile)) {
-        file_put_contents($postsFile, '[]'); // Создаем пустой файл, если его нет
+        file_put_contents($postsFile, '[]');
     }
 
-    // Читаем и декодируем посты
     $postsData = file_get_contents($postsFile);
     if ($postsData === false) {
         throw new Exception("Не удалось прочитать файл с постами");
@@ -21,11 +19,9 @@ try {
         throw new Exception("Ошибка формата JSON: " . json_last_error_msg());
     }
 
-    // Реверсируем порядок постов (новые сначала)
     $posts = is_array($posts) ? array_reverse($posts) : [];
 
 } catch (Exception $e) {
-    // Логируем ошибку и показываем пользователю упрощенное сообщение
     error_log("Ошибка в posts.php: " . $e->getMessage());
     $error = "Произошла ошибка при загрузке постов. Пожалуйста, попробуйте позже.";
     $posts = [];
@@ -59,13 +55,11 @@ try {
             <div class="posts">
                 <?php foreach ($posts as $post): ?>
                     <?php 
-                    // Проверяем структуру поста
                     $postId = $post['id'] ?? uniqid();
                     $title = $post['title'] ?? 'Без названия';
                     $content = $post['content'] ?? '';
                     $date = $post['date'] ?? date('Y-m-d H:i:s');
                     
-                    // Получаем количество комментариев
                     $commentCount = 0;
                     $commentFile = "data/comments/{$postId}.json";
                     if (file_exists($commentFile)) {
@@ -97,4 +91,5 @@ try {
         <?php endif; ?>
     </div>
 </body>
+
 </html>
